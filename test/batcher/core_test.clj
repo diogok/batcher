@@ -8,7 +8,7 @@
         proc (fn [stuff]
                (swap! counter + (count stuff))
                (swap! total + (apply + stuff))) 
-        bat  (batcher 5 10 proc)]
+        bat  (batcher {:size 5 :time 10 :fn proc})]
     (put bat 1)
     (put bat 2)
     (put bat 3)

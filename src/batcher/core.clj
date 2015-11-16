@@ -5,7 +5,7 @@
 (def end close!)
 
 (defn batcher
-  [limit timer proc] 
+  [{limit :size timer :time proc :fn wait :end}] 
    (let [in  (chan limit)
          on  (atom true)
          out (chan 1)
@@ -28,7 +28,8 @@
            (>!! out @buf)
            (close! out)
            (swap! buf empty)
-           (swap! on (fn [_] false)))
+           (swap! on (fn [_] false))
+           (if (not (nil? wait)) (close! wait)))
          (do
            (swap! buf conj item)
            (if (>= (count @buf) limit) 

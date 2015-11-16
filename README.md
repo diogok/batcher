@@ -27,7 +27,7 @@ When channel is closed it flushes the buffer and end the timer.
 Include the dependency:
 
 ```clojure
-[batcher "0.0.2"]
+[batcher "0.0.3"]
 ```
 
 Create a batch channel using the "batcher" functions passing a buffer size, time limit and callback function.
@@ -39,7 +39,7 @@ Create a batch channel using the "batcher" functions passing a buffer size, time
 (defn callback 
  [items] nil)
 
-(def batch (batcher 50 60000 callback))
+(def batch (batcher {:size 50 :time 60000 :fn callback}))
 
 (put batch {:foo "bar"})
 #_"Put is equivalent to >!!"
