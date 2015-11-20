@@ -1,9 +1,6 @@
 (ns batcher.core
   (:require [clojure.core.async :refer [>! >!! <!! <! go chan close! go-loop]]))
 
-(def put >!!)
-(def end close!)
-
 (defn batcher
   [{limit :size timer :time proc :fn wait :end}] 
    (let [in  (chan limit)
@@ -18,7 +15,7 @@
              (>!! out @buf)
              (swap! buf empty)))))
      (go-loop [items (<! out)]
-        (if (not (nil? items))
+        (if (nil? items) (close! wait)
           (do
             (proc items)
             (recur (<! out)))))
@@ -28,8 +25,7 @@
            (>!! out @buf)
            (close! out)
            (swap! buf empty)
-           (swap! on (fn [_] false))
-           (if (not (nil? wait)) (close! wait)))
+           (swap! on (fn [_] false)))
          (do
            (swap! buf conj item)
            (if (>= (count @buf) limit) 

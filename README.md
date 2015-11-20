@@ -35,19 +35,17 @@ Create a batch channel using the "batcher" functions passing a buffer size, time
 
 ```clojure
 (use ['batcher.core])
+(require ['clojure.core.async :refer [>! >!! <!! <! go chan close! go-loop]])
 
 (defn callback 
  [items] nil)
 
 (def batch (batcher {:size 50 :time 60000 :fn callback}))
 
-(put batch {:foo "bar"})
-#_"Put is equivalent to >!!"
-#_(>!! batch {:foo "baz"})
+(>!! batch {:foo "bar"})
 
 #_"Several puts later"
-(end batcher)
-#_(close! batcher)
+(close! batcher)
 
 ```
 
