@@ -1,5 +1,5 @@
-(defproject batcher "0.0.4"
-  :description "Buffer and Batch operations, by time or count."
+(defproject batcher "0.1.0"
+  :description "Buffer and Batch operations, by time or buffer size."
   :url "http://github.com/diogok/batcher"
   :license {:name "MIT"}
   :dependencies [[org.clojure/clojure "1.7.0"]
