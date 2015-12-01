@@ -4,24 +4,6 @@ Clojure library for batching operations on both buffer size limit and time limit
 
 It is a naive but working function.
 
-## Hot it works
-
-Each "batcher" is a channel with a buffer size limit, a time limit and a callback function.
-
-If the timer is 0 it will not be used. The size limit is mandatory.
-
-It will pass to callback a vector of all the items it have in buffer, it can be an empty vector or with any number of items up to buffer size.
-
-Once the time meet or limit is reached it will pass the buffer to the callback and empty the buffer.
-
-It will only call the callback again if previous call finished.
-
-It will block if buffer is full and previous callback has not finished, until the previous callback finishes.
-
-Internally it is a buffer channel of a limited size, an output channel with buffer of size one and a scheduled function.
-
-When channel is closed it flushes the buffer and end the timer.
-
 ## Usage
 
 Include the dependency:
@@ -30,8 +12,30 @@ Include the dependency:
 [batcher "0.0.3"]
 ```
 
-Create a batch channel using the "batcher" functions passing a buffer size, time limit and callback function.
+Create a batch channel using the "batcher" function passing hashmap of options.
 
+The options are all optional.
+
+```clojure
+{
+  :size 20
+  :time 1000
+  :fn (fn [buffer] nil)
+  :end (chan)
+  :out (chan)
+  :in (chan)
+}
+```
+
+If you pass a function to fn, it will receive a vector of items each time the batch happens. It may be empty.
+
+If you choose to provide your own in and out channels, they will be used and you can consume the batch buffer from the out channel. On end the channels will be closed and return nil. You should not consume the in channel, but you could use them in a tap or mult. 
+
+The end channel is closed and return nil after the internal input channel is closed, in case want to wait on it.
+
+The size and time limit tell when to process the buffer into the out channel and/or function. Time limit is in millis, and size is the number of elements.
+
+The batcher function return the input channel, that can be closed to end the process. On close the batcher also flushed the remaining buffer to the output channel and function.
 
 ```clojure
 (use ['batcher.core])
