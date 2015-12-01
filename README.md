@@ -8,9 +8,7 @@ It is a naive but working function.
 
 Include the dependency:
 
-```clojure
-[batcher "0.0.3"]
-```
+[![Clojars Project](http://clojars.org/batcher/latest-version.svg)](http://clojars.org/batcher)
 
 Create a batch channel using the "batcher" function passing hashmap of options.
 
