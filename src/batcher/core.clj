@@ -7,12 +7,12 @@
     timer :time 
     proc  :fn 
     end   :end
-    out   :out
+    uout  :out
     in    :in}] 
    (let [l   (or limit 1024)
          in  (or in (chan l))
          on  (atom true)
-         out (or out (chan 1))
+         out (chan 1)
          buf (atom [])]
 
      (if (and (not (nil? timer)) (> timer 0))
@@ -23,12 +23,16 @@
              (>!! out @buf)
              (swap! buf empty)))))
 
-     (if (not (nil? proc))
-       (go-loop [items (<! out)]
-          (if (not (nil? items) ) 
+     (go-loop [items (<! out)]
+        (if (nil? items) 
+          (when (not (nil? end))
             (do
-              (if (not (nil? proc)) (proc items))
-              (recur (<! out))))))
+              (when (not (nil? uout)) (close! uout))
+              (close! end)))
+          (do
+            (when (not (nil? proc)) (proc items))
+            (when (not (nil? uout)) (>! uout items))
+            (recur (<! out)))))
 
      (go-loop [item (<! in)]
        (if (nil? item)
@@ -36,8 +40,7 @@
            (>!! out @buf)
            (close! out)
            (swap! buf empty)
-           (swap! on (fn [_] false))
-           (if (not (nil? end)) (close! end)))
+           (swap! on (fn [_] false)))
          (do
            (swap! buf conj item)
            (if (>= (count @buf) l) 

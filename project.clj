@@ -1,4 +1,4 @@
-(defproject batcher "0.1.0"
+(defproject batcher "0.1.1"
   :description "Buffer and Batch operations, by time or buffer size."
   :url "http://github.com/diogok/batcher"
   :license {:name "MIT"}
